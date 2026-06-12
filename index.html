@@ -67,10 +67,10 @@
 <body>
   <div class="card">
     <h1>Hello!</h1>
-    <p>Welcome to your weather page. Click the button below to show the current weather for your location.</p>
-    <button id="refreshBtn">Show Current Weather</button>
+    <p>Welcome to your weather page. Click the button below to show the current weather in Beijing, China.</p>
+    <button id="refreshBtn">Show Beijing Weather</button>
     <div id="weather" class="weather">
-      <p>Weather information will appear here once you allow location access.</p>
+      <p>Weather information will appear here when you request Beijing weather.</p>
     </div>
     <div id="error" class="error"></div>
   </div>
@@ -82,42 +82,34 @@
 
     async function showWeather() {
       errorEl.textContent = '';
-      weatherEl.innerHTML = '<p>Getting location and weather...</p>';
+      weatherEl.innerHTML = '<p>Getting Beijing weather...</p>';
 
-      if (!navigator.geolocation) {
-        errorEl.textContent = 'Geolocation is not supported by your browser.';
-        weatherEl.innerHTML = '<p>Unable to get weather without location access.</p>';
-        return;
-      }
+      const latitude = 39.9042;
+      const longitude = 116.4074;
+      const city = 'Beijing, China';
 
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius`);
-          if (!response.ok) {
-            throw new Error('Weather service responded with an error.');
-          }
-          const data = await response.json();
-          const weather = data.current_weather;
-          if (!weather) {
-            throw new Error('No weather data available.');
-          }
-
-          const greeting = `Hello! The weather at your location is:`;
-          const details = `Temperature: ${weather.temperature.toFixed(1)}°C<br>` +
-            `Wind speed: ${weather.windspeed.toFixed(1)} km/h<br>` +
-            `Conditions: ${weather.weathercode === 0 ? 'Clear' : weather.weathercode === 1 ? 'Mainly clear' : weather.weathercode === 2 ? 'Partly cloudy' : weather.weathercode === 3 ? 'Overcast' : 'See details'}<br>` +
-            `Time: ${weather.time}`;
-
-          weatherEl.innerHTML = `<p>${greeting}</p><p>${details}</p>`;
-        } catch (err) {
-          errorEl.textContent = err.message;
-          weatherEl.innerHTML = '<p>Could not load weather data. Please try again later.</p>';
+      try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius`);
+        if (!response.ok) {
+          throw new Error('Weather service responded with an error.');
         }
-      }, (geoError) => {
-        errorEl.textContent = 'Location access was denied or unavailable.';
-        weatherEl.innerHTML = '<p>Please allow location access to view the weather.</p>';
-      });
+        const data = await response.json();
+        const weather = data.current_weather;
+        if (!weather) {
+          throw new Error('No weather data available.');
+        }
+
+        const greeting = `Hello! The current weather in ${city} is:`;
+        const details = `Temperature: ${weather.temperature.toFixed(1)}°C<br>` +
+          `Wind speed: ${weather.windspeed.toFixed(1)} km/h<br>` +
+          `Conditions: ${weather.weathercode === 0 ? 'Clear' : weather.weathercode === 1 ? 'Mainly clear' : weather.weathercode === 2 ? 'Partly cloudy' : weather.weathercode === 3 ? 'Overcast' : 'See details'}<br>` +
+          `Time: ${weather.time}`;
+
+        weatherEl.innerHTML = `<p>${greeting}</p><p>${details}</p>`;
+      } catch (err) {
+        errorEl.textContent = err.message;
+        weatherEl.innerHTML = '<p>Could not load weather data. Please try again later.</p>';
+      }
     }
 
     button.addEventListener('click', showWeather);
