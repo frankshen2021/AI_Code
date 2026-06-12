@@ -67,10 +67,10 @@
 <body>
   <div class="card">
     <h1>Hello!</h1>
-    <p>Welcome to your weather page. Click the button below to show the current weather in Beijing, China.</p>
-    <button id="refreshBtn">Show Beijing Weather</button>
+    <p>Welcome to your weather page. Click the button below to show the current weather in Shanghai, China.</p>
+    <button id="refreshBtn">Show Shanghai Weather</button>
     <div id="weather" class="weather">
-      <p>Weather information will appear here when you request Beijing weather.</p>
+      <p>Weather information will appear here when you request Shanghai weather.</p>
     </div>
     <div id="error" class="error"></div>
   </div>
@@ -82,11 +82,11 @@
 
     async function showWeather() {
       errorEl.textContent = '';
-      weatherEl.innerHTML = '<p>Getting Beijing weather...</p>';
+      weatherEl.innerHTML = '<p>Getting Shanghai weather...</p>';
 
-      const latitude = 39.9042;
-      const longitude = 116.4074;
-      const city = 'Beijing, China';
+      const latitude = 31.2304;
+      const longitude = 121.4737;
+      const city = 'Shanghai, China';
 
       try {
         const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius`);
