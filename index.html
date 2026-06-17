@@ -67,8 +67,20 @@
 <body>
   <div class="card">
     <h1>Hello Shen Frank!</h1>    
-    <p>Welcome to your weather page. Click the button below to show the current weather in Shanghai, China.</p>
-    <button id="refreshBtn">Show Shanghai Weather</button>
+    <p>Welcome to your weather page. Select a city below and click the button to show the current weather.</p>
+    <div class="city-select">
+      <label for="citySelect">Choose a city:</label>
+      <select id="citySelect">
+        <option value="beijing">Beijing</option>
+        <option value="shanghai">Shanghai</option>
+        <option value="wuhan">Wuhan</option>
+        <option value="chongqing">Chongqing</option>
+        <option value="xianggang">Hong Kong</option>
+        <option value="taiwan">Taipei</option>
+        <option value="hainan">Haikou</option>
+      </select>
+    </div>
+    <button id="refreshBtn">Show Weather</button>
     <div id="weather" class="weather">
       <p>Weather information will appear here when you request Shanghai weather.</p>
     </div>
@@ -79,6 +91,21 @@
     const weatherEl = document.getElementById('weather');
     const errorEl = document.getElementById('error');
     const button = document.getElementById('refreshBtn');
+    const citySelect = document.getElementById('citySelect');
+
+    const cities = {
+      beijing: { label: 'Beijing, China', latitude: 39.9042, longitude: 116.4074, timezone: 'Asia/Shanghai' },
+      shanghai: { label: 'Shanghai, China', latitude: 31.2304, longitude: 121.4737, timezone: 'Asia/Shanghai' },
+      wuhan: { label: 'Wuhan, China', latitude: 30.5928, longitude: 114.3055, timezone: 'Asia/Shanghai' },
+      chongqing: { label: 'Chongqing, China', latitude: 29.5630, longitude: 106.5516, timezone: 'Asia/Shanghai' },
+      xianggang: { label: 'Hong Kong', latitude: 22.3193, longitude: 114.1694, timezone: 'Asia/Hong_Kong' },
+      taiwan: { label: 'Taipei, Taiwan', latitude: 25.0330, longitude: 121.5654, timezone: 'Asia/Taipei' },
+      hainan: { label: 'Haikou, Hainan', latitude: 20.0442, longitude: 110.1999, timezone: 'Asia/Shanghai' }
+    };
+
+    function getSelectedCity() {
+      return cities[citySelect.value] || cities.shanghai;
+    }
 
     function weatherCodeToText(code) {
       const map = {
@@ -121,14 +148,16 @@
     }
 
     async function showWeather() {
+      const selectedCity = getSelectedCity();
       errorEl.textContent = '';
-      weatherEl.innerHTML = '<p>Getting Shanghai weather...</p>';
+      weatherEl.innerHTML = `<p>Getting weather for ${selectedCity.label}...</p>`;
 
-      const latitude = 31.2304;
-      const longitude = 121.4737;
-      const city = 'Shanghai, China';
+      const latitude = selectedCity.latitude;
+      const longitude = selectedCity.longitude;
+      const city = selectedCity.label;
+      const timezone = encodeURIComponent(selectedCity.timezone);
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=relativehumidity_2m,pressure_msl,precipitation&daily=sunrise,sunset&temperature_unit=celsius&timezone=Asia%2FShanghai`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=relativehumidity_2m,pressure_msl,precipitation&daily=sunrise,sunset&temperature_unit=celsius&timezone=${timezone}`;
 
       try {
         const response = await fetch(url);
